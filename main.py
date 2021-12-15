@@ -1,7 +1,325 @@
-def generate_field():
-    """
-    Generate field
-    :return: lists of lists 10*10
-    """
+import random
 
-def shoot_ship()
+comp_field = []
+users_field = []
+comp_field_for_display = []
+comp_ships_list = []
+kil_field = []
+alf = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+memory = []
+q = []
+
+
+def Random_field(n):
+    # filling the playing field
+    field = []
+    for i in range(12):
+        temp = []
+        for j in range(12):
+            temp.append('.')
+        field.append(temp)
+
+    ships = [4, 3, 2, 1]
+    for k in range(3, -1, -1):
+        t = ships[k]
+        while t > 0:
+            t -= 1
+            done = False
+            while (done == False):
+                napr = random.randint(1, 2)
+                if napr == 1:
+                    I = random.randint(1, 10)
+                    J = random.randint(1, 7)
+                    chek = True
+                    for i in range(I - 1, I + 2):
+                        for j in range(J - 1, J + k + 2):
+                            if field[i][j] == '#':
+                                chek = False
+                                break
+                    if chek == True:
+                        temp = []
+                        for j in range(J, J + k + 1):
+                            field[I][j] = '#'
+                            temp.append((I, j))
+                        if n == 1: comp_ships_list.append(temp)
+
+                        done = True
+                else:
+                    I = random.randint(1, 6)
+                    J = random.randint(1, 10)
+                    chek = True
+                    for i in range(I - 1, I + k + 3):
+                        for j in range(J - 1, J + 2):
+                            if field[i][j] == '#':
+                                chek = False
+                                break
+                    if chek == True:
+                        temp = []
+                        for i in range(I, I + k + 1):
+                            field[i][J] = '#'
+                            temp.append((i, J))
+                        if n == 1: comp_ships_list.append(temp)
+                        done = True
+    return field
+
+
+def Choise():
+    # function in which the user selects his playing field
+    great_field = False
+    while (great_field == False):
+        users_field = Random_field(0)
+        for i in range(1, 11):
+            for j in range(1, 11):
+                print(users_field[i][j], end=' ')
+            print()
+        print("""Do you agry with this field?
+1 - Yes
+2 - No""")
+        a = input(">>> ")
+        while a != '1' and a != '2':
+            print("Error. Try again")
+            a = input(">>> ")
+        a = int(a)
+
+        if a == 1:
+            great_field = True
+            print("Great!")
+        else:
+            print("Generating a new...")
+    return users_field
+
+def main():
+    # main function with gameplay
+    print("""
+Hello,
+Welcome to the Star Battle.
+A long time ago in a distant galaxy ...
+There is a civil war. Rebel spaceships, striking from a secret base, have won their first victory in a battle with the sinister Galactic Empire.
+You are appointed by the general for the decisive battle in the war. Choose the layout of your ships and go ahead to victory!""")
+    print("Please choose your playing field.")
+
+    users_field = Choise()
+    comp_field = Random_field(1)
+    for i in range(12):
+        temp = []
+        for j in range(12):
+            temp.append('.')
+        comp_field_for_display.append(temp)
+    user_field_for_comp = []
+    for i in range(12):
+        temp = []
+        for j in range(12):
+            temp.append('.')
+        user_field_for_comp.append(temp)
+
+    print("You shoot first, good luck!")
+    print("If you didn't reed the rules, your coordinates should be according to this example: A7")
+    comp_ships = 20
+    users_ships = 20
+    while (True):
+
+        correct = False
+        I = 0
+        J = 0
+        while (correct == False):
+            # input of coordinates
+            rez = ''
+            rezComp = ''
+            print("Please enter coordinates:")
+            st = input(">>> ")
+            if st == 'exit':
+                print("Bye")  # quitting the game
+                return
+            if len(st) > 2 or len(st) < 2 or (not (st[0] >= 'A' and st[0] <= 'J')) or (
+            not (st[1] >= '0' and st[1] <= '9')):
+                print("Error, please try again. Your coordinates shood be like this: A7")
+            else:
+                repet = False
+                for i in range(len(memory)):
+                    if memory[i] == st:
+                        repet = True
+                if repet == False:
+                    correct = True
+                    for i in range(10):
+                        if alf[i] == st[0]:
+                            J = i + 1
+                            break
+                    I = int(st[1]) + 1
+                    memory.append(st)
+                else:
+                    print("You have already shot in this area")
+        # shot at coordinates
+        if comp_field[I][J] == '.':
+            comp_field_for_display[I][J] = '+'
+            rez = 'Miss'
+        else:
+            if comp_field[I][J] == '#':
+                tempI = 0
+                for i in range(10):
+                    for j in range(len(comp_ships_list[i])):
+                        if comp_ships_list[i][j][0] == I and comp_ships_list[i][j][1] == J:
+                            comp_ships_list[i].remove((I, J))
+                            tempI = i
+                            break
+                comp_ships -= 1
+                comp_field_for_display[I][J] = 'X'
+                if len(comp_ships_list[tempI]) == 0:
+                    rez = 'Kill'
+                    comp_field[I][J] = '.'
+                    for i in range(1, 11):
+                        for j in range(1, 11):
+                            if comp_field_for_display[i][j] == 'X' and comp_field[i - 1][j] != '#' and \
+                                    comp_field[i + 1][j] != '#' and comp_field[i][j - 1] != '#' and comp_field[i][
+                                j + 1] != '#' and comp_field[i - 1][j - 1] != '#' and comp_field[i - 1][
+                                j + 1] != '#' and comp_field[i + 1][j - 1] != '#' and comp_field[i + 1][j + 1] != '#':
+                                if comp_field_for_display[i - 1][j] != 'X': comp_field_for_display[i - 1][j] = '+'
+                                if comp_field_for_display[i + 1][j] != 'X': comp_field_for_display[i + 1][j] = '+'
+                                if comp_field_for_display[i][j - 1] != 'X': comp_field_for_display[i][j - 1] = '+'
+                                if comp_field_for_display[i][j + 1] != 'X': comp_field_for_display[i][j + 1] = '+'
+                                if comp_field_for_display[i - 1][j - 1] != 'X': comp_field_for_display[i - 1][
+                                    j - 1] = '+'
+                                if comp_field_for_display[i - 1][j + 1] != 'X': comp_field_for_display[i - 1][
+                                    j + 1] = '+'
+                                if comp_field_for_display[i + 1][j - 1] != 'X': comp_field_for_display[i + 1][
+                                    j - 1] = '+'
+                                if comp_field_for_display[i + 1][j + 1] != 'X': comp_field_for_display[i + 1][
+                                    j + 1] = '+'
+                else:
+                    rez = 'Damage'
+                    comp_field[I][J] = '.'
+
+        # computer step
+        if len(q) == 0:
+            no_shoot_yet = False
+            I = 0
+            J = 0
+            while no_shoot_yet == False:
+                I = random.randint(1, 10)
+                J = random.randint(1, 10)
+                if users_field[I][J] != 'X' and users_field[I][J] != '+':
+                    no_shoot_yet = True
+            if users_field[I][J] == '.':
+                user_field_for_comp[I][J] = '*'
+                users_field[I][J] = '+'
+                rezComp = 'Miss'
+            else:
+                users_field[I][J] = 'X'
+                users_ships -= 1
+                flag = False
+                if users_field[I - 1][J] == '#':
+                    q.append((I - 1, J))
+                    user_field_for_comp[I - 1][J] = '*'
+                    flag = True
+                if users_field[I + 1][J] == '#':
+                    q.append((I + 1, J))
+                    user_field_for_comp[I + 1][J] = '*'
+                    flag = True
+                if users_field[I][J - 1] == '#':
+                    q.append((I, J - 1))
+                    user_field_for_comp[I][J - 1] = '*'
+                    flag = True
+                if users_field[I][J + 1] == '#':
+                    q.append((I, J + 1))
+                    user_field_for_comp[I][J + 1] = '*'
+                    flag = True
+                if flag == False and len(q) == 0:
+                    rezComp = 'Kill'
+                    if users_field[I - 1][J] != 'X': users_field[I - 1][J] = '+'
+                    if users_field[I + 1][J] != 'X': users_field[I + 1][J] = '+'
+                    if users_field[I][J - 1] != 'X': users_field[I][J - 1] = '+'
+                    if users_field[I][J + 1] != 'X': users_field[I][J + 1] = '+'
+                    if users_field[I - 1][J - 1] != 'X': users_field[I - 1][J - 1] = '+'
+                    if users_field[I - 1][J + 1] != 'X': users_field[I - 1][J + 1] = '+'
+                    if users_field[I + 1][J - 1] != 'X': users_field[I + 1][J - 1] = '+'
+                    if users_field[I + 1][J + 1] != 'X': users_field[I + 1][J + 1] = '+'
+                    user_field_for_comp[I - 1][J] = '*'
+                    user_field_for_comp[I + 1][J] = '*'
+                    user_field_for_comp[I][J - 1] = '*'
+                    user_field_for_comp[I][J + 1] = '*'
+                    user_field_for_comp[I - 1][J - 1] = '*'
+                    user_field_for_comp[I - 1][J + 1] = '*'
+                    user_field_for_comp[I + 1][J - 1] = '*'
+                    user_field_for_comp[I - 1][J + 1] = '*'
+
+                else:
+                    rezComp = 'Damage'
+        else:
+            a = q.pop(0)
+            users_ships -= 1
+            I = a[0]
+            J = a[1]
+
+            users_field[I][J] = 'X'
+            flag = False
+            if users_field[I - 1][J] == '#':
+                q.append((I - 1, J))
+                user_field_for_comp[I - 1][J] = '*'
+                flag = True
+            if users_field[I + 1][J] == '#':
+                q.append((I + 1, J))
+                user_field_for_comp[I + 1][J] = '*'
+                flag = True
+            if users_field[I][J - 1] == '#':
+                q.append((I, J - 1))
+                user_field_for_comp[I][J - 1] = '*'
+                flag = True
+            if users_field[I][J + 1] == '#':
+                q.append((I, J + 1))
+                user_field_for_comp[I][J + 1] = '*'
+                flag = True
+            if flag == False and len(q) == 0:
+                rezComp = 'Kill'
+                for i in range(1, 11):
+                    for j in range(1, 11):
+                        if users_field[i][j] == 'X':
+                            if users_field[i - 1][j] != 'X': users_field[i - 1][j] = '+'
+                            if users_field[i + 1][j] != 'X': users_field[i + 1][j] = '+'
+                            if users_field[i][j - 1] != 'X': users_field[i][j - 1] = '+'
+                            if users_field[i][j + 1] != 'X': users_field[i][j + 1] = '+'
+                            if users_field[i - 1][j - 1] != 'X': users_field[i - 1][j - 1] = '+'
+                            if users_field[i - 1][j + 1] != 'X': users_field[i - 1][j + 1] = '+'
+                            if users_field[i + 1][J - 1] != 'X': users_field[i + 1][j - 1] = '+'
+                            if users_field[i + 1][j + 1] != 'X': users_field[i + 1][j + 1] = '+'
+                            user_field_for_comp[i - 1][j] = '*'
+                            user_field_for_comp[i + 1][j] = '*'
+                            user_field_for_comp[i][j - 1] = '*'
+                            user_field_for_comp[i][j + 1] = '*'
+                            user_field_for_comp[i - 1][j - 1] = '*'
+                            user_field_for_comp[i - 1][j + 1] = '*'
+                            user_field_for_comp[i + 1][j - 1] = '*'
+                            user_field_for_comp[i - 1][j + 1] = '*'
+            else:
+                rezComp = 'Damage'
+
+        # playing field output
+        print('  A B C D E F G H I J             A B C D E F G H I J')
+        for i in range(1, 11):
+            print(i - 1, end=' ')
+            for j in range(1, 11):
+                print(comp_field_for_display[i][j], end=' ')
+
+            print('         ', end=' ')
+
+            print(i - 1, end=' ')
+            for j in range(1, 11):
+                print(users_field[i][j], end=' ')
+
+            print()
+
+        print(rez, ': ', st, '                             ', rezComp, ': ', alf[J - 1], I - 1, sep='')
+
+        if comp_ships == 0:
+            # displaying the result of the game when the player wins
+            print("""YOU WIN!!!
+GOOD WORK!!!""")
+            return
+
+        if users_ships == 0:
+            # displaying the result of the game when the computer wins
+            print("""YOU LOST:(
+Try again!!!""")
+            return
+
+
+if __name__ == '__main__':
+    main()
