@@ -1,1 +1,3 @@
-# Workshop_task_3
+#Multiplayer
+
+This program allow you to play battleship with computer
