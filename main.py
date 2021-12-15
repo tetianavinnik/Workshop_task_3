@@ -11,8 +11,6 @@ q = []
 
 
 def Random_field(n):
-    # filling the playing field
-    def Random_field(n):
         # filling the playing field
         field = []
         for i in range(12):
@@ -98,8 +96,7 @@ def main():
     print("1. You will have 2 field: one yours and another computers")
     print("2. you have to shoot on ships like that: H6")
     print("Have a nice game!!!")
-
-        users_field = Choise()
+    users_field = Choise()
     comp_field = Random_field(1)
     for i in range(12):
         temp = []
@@ -117,7 +114,6 @@ def main():
     comp_ships = 20
     users_ships = 20
     while (True):
-
         correct = False
         I = 0
         J = 0
