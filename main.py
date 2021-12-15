@@ -16,7 +16,9 @@ def Random_field(n):
 
 
 def Choise():
-    # function in which the user selects his playing field
+    """
+    function in which the user selects his playing field
+    """
     great_field = False
     while great_field == False:
         users_field = Random_field(0)
@@ -37,7 +39,7 @@ def Choise():
             great_field = True
             print("Great!")
         else:
-            print("Generating a new...")
+            print("Generating a new....")
     return users_field
 
 def main():
